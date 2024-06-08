@@ -1,1 +1,1 @@
-collection of notebooks finetuning whisper on nigerian languages Igbo and Hausa using Low Rank adaptation.
+a collection of notebooks finetuning whisper (and obtaining metrics) on nigerian languages Yoruba and Hausa using Low Rank adaptation and integer quanization techniques to reduce computational cost.
