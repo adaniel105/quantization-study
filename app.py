@@ -4,34 +4,37 @@ import os
 import shutil
 import subprocess
 
-'''
-def SRTGen(video, src_lang, tgt_lang):
-    model = whisper.load_model("tiny")
+model = whisper.load_model("tiny") #replace with large-v3
+
+def srt_gen(video, tgt_lang):
+  if tgt_lang == "en":
+    result = model.transcribe(video, language=tgt_lang)
+  else:
+    pass
+  return result["text"]
+
+def srt_dl(video, tgt_lang):
     result = model.transcribe(video)
     srt_file_path = str("/tmp/gradio/")
     writer = whisper.utils.get_writer("srt", srt_file_path)
     writer(result, video)
     video_name = os.path.basename(video).split(".")[0]
     srt_file = f"{srt_file_path}/{video_name}.srt"
-    return result["text"], srt_file
-'''
+    return srt_file
 
 with gr.Blocks() as demo:
     with gr.Row():
         with gr.Column():
             video = gr.Video(label="Upload Video")
-            src_lang = gr.Text(label="Source Language")
             tgt_lang = gr.Dropdown([("English", "en") , ("Hausa", "ha") , ("Yoruba", "yo")], label="Target Language")
-            text_submit = gr.Button("Generate Text")
+            text_submit = gr.Button("Generate Text", variant="primary")
         with gr.Column():
-            gr.Text(label="Transcription", placeholder="Text output here.....")
-            srt_submit = gr.Button("Generate SRT")
+            text_output = gr.Text(label="Transcription", placeholder="Text output here.....")
+            srt_submit = gr.Button("Generate Subtitles", variant="primary")
             with gr.Column():
-                file_output = gr.File(label="SRT File")
+                srt_output = gr.File(label="Subtitles")
 
-    text_submit.click(fn=SRTGen, inputs=[video, src_lang, tgt_lang], outputs=[gr.Text(label="Transcription")])
-    srt_submit.click(fn=srt_dl, inputs=[file_output], outputs=[file_output])
+    text_submit.click(fn=srt_gen, inputs=[video, tgt_lang], outputs=[text_output])
+    srt_submit.click(fn=srt_dl, inputs=[video, tgt_lang], outputs=[srt_output])
 
-
-#demo = gr.Interface(fn=SRTGen, inputs=[gr.Video(label="Upload Video")], outputs=["text", "file"])
 demo.launch(debug=True)
