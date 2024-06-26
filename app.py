@@ -5,7 +5,7 @@ import pysrt
 import shutil
 import subprocess
 
-model = whisper.load_model("large-v3")  # replace with large-v3
+model = whisper.load_model("large-v3")
 
 
 def srt_gen(video, src_lang, tgt_lang):
