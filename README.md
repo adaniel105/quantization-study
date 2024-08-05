@@ -1,1 +1,6 @@
-A collection of notebooks finetuning the whisper model (and obtaining metrics) on nigerian languages Yoruba and Hausa using Low Rank adaptation and integer quanization techniques to reduce computational cost.
+Studying quanitization techniques to reduce computational overhead with OpenAI's whisper.
+
+Paper Links:
+
+Low-Rank Adaptation of Large Language Models: https://arxiv.org/abs/2106.09685
+
