@@ -1,4 +1,5 @@
-Studying quanitization techniques to reduce computational overhead with OpenAI's whisper.
+## quanitization-study
+Studying quanitization techniques to reduce the computational overhead of training and inference with multi-million/billion parameter models.
 
 Paper Links:
 
