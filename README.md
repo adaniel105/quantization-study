@@ -3,5 +3,6 @@ Studying quanitization techniques to reduce the computational overhead of traini
 
 Paper Links:
 
-Low-Rank Adaptation of Large Language Models: https://arxiv.org/abs/2106.09685
+QLoRA: Efficient Finetuning of quantized LLMs - https://arxiv.org/abs/2305.14314
+GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection - GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection
 
