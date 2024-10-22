@@ -1,0 +1,487 @@
+{
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "3oLRhpmHSc7t",
+        "outputId": "a9afbc19-0fff-431b-e284-97379b12bc98"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\u001b[?25l     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m0.0/800.5 kB\u001b[0m \u001b[31m?\u001b[0m eta \u001b[36m-:--:--\u001b[0m\r\u001b[2K     \u001b[91m━━━━━━━━━━━━━━━━\u001b[0m\u001b[90m╺\u001b[0m\u001b[90m━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m327.7/800.5 kB\u001b[0m \u001b[31m9.5 MB/s\u001b[0m eta \u001b[36m0:00:01\u001b[0m\r\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m800.5/800.5 kB\u001b[0m \u001b[31m9.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25h  Installing build dependencies ... \u001b[?25l\u001b[?25hdone\n",
+            "  Getting requirements to build wheel ... \u001b[?25l\u001b[?25hdone\n",
+            "  Preparing metadata (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\n",
+            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m104.4/104.4 kB\u001b[0m \u001b[31m2.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25h  Preparing metadata (setup.py) ... \u001b[?25l\u001b[?25hdone\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m320.7/320.7 kB\u001b[0m \u001b[31m9.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m122.4/122.4 MB\u001b[0m \u001b[31m7.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m209.5/209.5 MB\u001b[0m \u001b[31m5.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.2/1.2 MB\u001b[0m \u001b[31m35.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25h  Building wheel for openai-whisper (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\n",
+            "  Building wheel for pysrt (setup.py) ... \u001b[?25l\u001b[?25hdone\n"
+          ]
+        }
+      ],
+      "source": [
+        "!pip install -q transformers accelerate peft bitsandbytes huggingface_hub openai-whisper pysrt"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "9yigDbNk_to_",
+        "outputId": "ad6aa395-4d40-4704-e96d-9ea44c7fd7ab"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Collecting gradio\n",
+            "  Downloading gradio-5.3.0-py3-none-any.whl.metadata (15 kB)\n",
+            "Collecting aiofiles<24.0,>=22.0 (from gradio)\n",
+            "  Downloading aiofiles-23.2.1-py3-none-any.whl.metadata (9.7 kB)\n",
+            "Requirement already satisfied: anyio<5.0,>=3.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (3.7.1)\n",
+            "Collecting fastapi<1.0,>=0.115.2 (from gradio)\n",
+            "  Downloading fastapi-0.115.3-py3-none-any.whl.metadata (27 kB)\n",
+            "Collecting ffmpy (from gradio)\n",
+            "  Downloading ffmpy-0.4.0-py3-none-any.whl.metadata (2.9 kB)\n",
+            "Collecting gradio-client==1.4.2 (from gradio)\n",
+            "  Downloading gradio_client-1.4.2-py3-none-any.whl.metadata (7.1 kB)\n",
+            "Collecting httpx>=0.24.1 (from gradio)\n",
+            "  Downloading httpx-0.27.2-py3-none-any.whl.metadata (7.1 kB)\n",
+            "Collecting huggingface-hub>=0.25.1 (from gradio)\n",
+            "  Downloading huggingface_hub-0.26.1-py3-none-any.whl.metadata (13 kB)\n",
+            "Requirement already satisfied: jinja2<4.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (3.1.4)\n",
+            "Collecting markupsafe~=2.0 (from gradio)\n",
+            "  Downloading MarkupSafe-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.0 kB)\n",
+            "Requirement already satisfied: numpy<3.0,>=1.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (1.26.4)\n",
+            "Collecting orjson~=3.0 (from gradio)\n",
+            "  Downloading orjson-3.10.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (50 kB)\n",
+            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m50.6/50.6 kB\u001b[0m \u001b[31m3.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hRequirement already satisfied: packaging in /usr/local/lib/python3.10/dist-packages (from gradio) (24.1)\n",
+            "Requirement already satisfied: pandas<3.0,>=1.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (2.2.2)\n",
+            "Requirement already satisfied: pillow<11.0,>=8.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (10.4.0)\n",
+            "Requirement already satisfied: pydantic>=2.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (2.9.2)\n",
+            "Collecting pydub (from gradio)\n",
+            "  Downloading pydub-0.25.1-py2.py3-none-any.whl.metadata (1.4 kB)\n",
+            "Collecting python-multipart>=0.0.9 (from gradio)\n",
+            "  Downloading python_multipart-0.0.12-py3-none-any.whl.metadata (1.9 kB)\n",
+            "Requirement already satisfied: pyyaml<7.0,>=5.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (6.0.2)\n",
+            "Collecting ruff>=0.2.2 (from gradio)\n",
+            "  Downloading ruff-0.7.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (25 kB)\n",
+            "Collecting semantic-version~=2.0 (from gradio)\n",
+            "  Downloading semantic_version-2.10.0-py2.py3-none-any.whl.metadata (9.7 kB)\n",
+            "Collecting starlette<1.0,>=0.40.0 (from gradio)\n",
+            "  Downloading starlette-0.41.0-py3-none-any.whl.metadata (6.0 kB)\n",
+            "Collecting tomlkit==0.12.0 (from gradio)\n",
+            "  Downloading tomlkit-0.12.0-py3-none-any.whl.metadata (2.7 kB)\n",
+            "Requirement already satisfied: typer<1.0,>=0.12 in /usr/local/lib/python3.10/dist-packages (from gradio) (0.12.5)\n",
+            "Requirement already satisfied: typing-extensions~=4.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (4.12.2)\n",
+            "Collecting uvicorn>=0.14.0 (from gradio)\n",
+            "  Downloading uvicorn-0.32.0-py3-none-any.whl.metadata (6.6 kB)\n",
+            "Requirement already satisfied: fsspec in /usr/local/lib/python3.10/dist-packages (from gradio-client==1.4.2->gradio) (2024.6.1)\n",
+            "Collecting websockets<13.0,>=10.0 (from gradio-client==1.4.2->gradio)\n",
+            "  Downloading websockets-12.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)\n",
+            "Requirement already satisfied: idna>=2.8 in /usr/local/lib/python3.10/dist-packages (from anyio<5.0,>=3.0->gradio) (3.10)\n",
+            "Requirement already satisfied: sniffio>=1.1 in /usr/local/lib/python3.10/dist-packages (from anyio<5.0,>=3.0->gradio) (1.3.1)\n",
+            "Requirement already satisfied: exceptiongroup in /usr/local/lib/python3.10/dist-packages (from anyio<5.0,>=3.0->gradio) (1.2.2)\n",
+            "Requirement already satisfied: certifi in /usr/local/lib/python3.10/dist-packages (from httpx>=0.24.1->gradio) (2024.8.30)\n",
+            "Collecting httpcore==1.* (from httpx>=0.24.1->gradio)\n",
+            "  Downloading httpcore-1.0.6-py3-none-any.whl.metadata (21 kB)\n",
+            "Collecting h11<0.15,>=0.13 (from httpcore==1.*->httpx>=0.24.1->gradio)\n",
+            "  Downloading h11-0.14.0-py3-none-any.whl.metadata (8.2 kB)\n",
+            "Requirement already satisfied: filelock in /usr/local/lib/python3.10/dist-packages (from huggingface-hub>=0.25.1->gradio) (3.16.1)\n",
+            "Requirement already satisfied: requests in /usr/local/lib/python3.10/dist-packages (from huggingface-hub>=0.25.1->gradio) (2.32.3)\n",
+            "Requirement already satisfied: tqdm>=4.42.1 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub>=0.25.1->gradio) (4.66.5)\n",
+            "Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas<3.0,>=1.0->gradio) (2.8.2)\n",
+            "Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas<3.0,>=1.0->gradio) (2024.2)\n",
+            "Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.10/dist-packages (from pandas<3.0,>=1.0->gradio) (2024.2)\n",
+            "Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.10/dist-packages (from pydantic>=2.0->gradio) (0.7.0)\n",
+            "Requirement already satisfied: pydantic-core==2.23.4 in /usr/local/lib/python3.10/dist-packages (from pydantic>=2.0->gradio) (2.23.4)\n",
+            "Requirement already satisfied: click>=8.0.0 in /usr/local/lib/python3.10/dist-packages (from typer<1.0,>=0.12->gradio) (8.1.7)\n",
+            "Requirement already satisfied: shellingham>=1.3.0 in /usr/local/lib/python3.10/dist-packages (from typer<1.0,>=0.12->gradio) (1.5.4)\n",
+            "Requirement already satisfied: rich>=10.11.0 in /usr/local/lib/python3.10/dist-packages (from typer<1.0,>=0.12->gradio) (13.9.2)\n",
+            "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil>=2.8.2->pandas<3.0,>=1.0->gradio) (1.16.0)\n",
+            "Requirement already satisfied: markdown-it-py>=2.2.0 in /usr/local/lib/python3.10/dist-packages (from rich>=10.11.0->typer<1.0,>=0.12->gradio) (3.0.0)\n",
+            "Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /usr/local/lib/python3.10/dist-packages (from rich>=10.11.0->typer<1.0,>=0.12->gradio) (2.18.0)\n",
+            "Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.10/dist-packages (from requests->huggingface-hub>=0.25.1->gradio) (3.4.0)\n",
+            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/dist-packages (from requests->huggingface-hub>=0.25.1->gradio) (2.2.3)\n",
+            "Requirement already satisfied: mdurl~=0.1 in /usr/local/lib/python3.10/dist-packages (from markdown-it-py>=2.2.0->rich>=10.11.0->typer<1.0,>=0.12->gradio) (0.1.2)\n",
+            "Downloading gradio-5.3.0-py3-none-any.whl (56.7 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.7/56.7 MB\u001b[0m \u001b[31m9.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading gradio_client-1.4.2-py3-none-any.whl (319 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m319.8/319.8 kB\u001b[0m \u001b[31m15.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading tomlkit-0.12.0-py3-none-any.whl (37 kB)\n",
+            "Downloading aiofiles-23.2.1-py3-none-any.whl (15 kB)\n",
+            "Downloading fastapi-0.115.3-py3-none-any.whl (94 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m94.6/94.6 kB\u001b[0m \u001b[31m7.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading httpx-0.27.2-py3-none-any.whl (76 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m76.4/76.4 kB\u001b[0m \u001b[31m6.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading httpcore-1.0.6-py3-none-any.whl (78 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m78.0/78.0 kB\u001b[0m \u001b[31m5.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading huggingface_hub-0.26.1-py3-none-any.whl (447 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m447.4/447.4 kB\u001b[0m \u001b[31m13.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading MarkupSafe-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (25 kB)\n",
+            "Downloading orjson-3.10.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (144 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m144.5/144.5 kB\u001b[0m \u001b[31m5.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading python_multipart-0.0.12-py3-none-any.whl (23 kB)\n",
+            "Downloading ruff-0.7.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (10.9 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m10.9/10.9 MB\u001b[0m \u001b[31m18.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading semantic_version-2.10.0-py2.py3-none-any.whl (15 kB)\n",
+            "Downloading starlette-0.41.0-py3-none-any.whl (73 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m73.2/73.2 kB\u001b[0m \u001b[31m6.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading uvicorn-0.32.0-py3-none-any.whl (63 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m63.7/63.7 kB\u001b[0m \u001b[31m6.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading ffmpy-0.4.0-py3-none-any.whl (5.8 kB)\n",
+            "Downloading pydub-0.25.1-py2.py3-none-any.whl (32 kB)\n",
+            "Downloading h11-0.14.0-py3-none-any.whl (58 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m58.3/58.3 kB\u001b[0m \u001b[31m5.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading websockets-12.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (130 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m130.2/130.2 kB\u001b[0m \u001b[31m11.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hInstalling collected packages: pydub, websockets, tomlkit, semantic-version, ruff, python-multipart, orjson, markupsafe, h11, ffmpy, aiofiles, uvicorn, starlette, huggingface-hub, httpcore, httpx, fastapi, gradio-client, gradio\n",
+            "  Attempting uninstall: markupsafe\n",
+            "    Found existing installation: MarkupSafe 3.0.2\n",
+            "    Uninstalling MarkupSafe-3.0.2:\n",
+            "      Successfully uninstalled MarkupSafe-3.0.2\n",
+            "  Attempting uninstall: huggingface-hub\n",
+            "    Found existing installation: huggingface-hub 0.24.7\n",
+            "    Uninstalling huggingface-hub-0.24.7:\n",
+            "      Successfully uninstalled huggingface-hub-0.24.7\n",
+            "Successfully installed aiofiles-23.2.1 fastapi-0.115.3 ffmpy-0.4.0 gradio-5.3.0 gradio-client-1.4.2 h11-0.14.0 httpcore-1.0.6 httpx-0.27.2 huggingface-hub-0.26.1 markupsafe-2.1.5 orjson-3.10.10 pydub-0.25.1 python-multipart-0.0.12 ruff-0.7.0 semantic-version-2.10.0 starlette-0.41.0 tomlkit-0.12.0 uvicorn-0.32.0 websockets-12.0\n"
+          ]
+        }
+      ],
+      "source": [
+        "!pip install --upgrade gradio"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "o0VeTvwlKlT0",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "62827295-973d-49b4-e6f8-103078ca2450"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "The token has not been saved to the git credentials helper. Pass `add_to_git_credential=True` in this function directly or `--add-to-git-credential` if using via `huggingface-cli` if you want to set the git credential as well.\n",
+            "Token is valid (permission: write).\n",
+            "The token `laptop` has been saved to /root/.cache/huggingface/stored_tokens\n",
+            "Your token has been saved to /root/.cache/huggingface/token\n",
+            "Login successful.\n",
+            "The current active token is: `laptop`\n"
+          ]
+        }
+      ],
+      "source": [
+        "!huggingface-cli login --token <hf_token>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "SG4jaC2Lq8xV",
+        "outputId": "49777c68-9077-4168-ad43-6cb0bda077c2"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: python-multipart in /usr/local/lib/python3.10/dist-packages (0.0.12)\n"
+          ]
+        }
+      ],
+      "source": [
+        "!pip install python-multipart"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "acSKiLh8J9a0"
+      },
+      "outputs": [],
+      "source": [
+        "\n",
+        "import gradio as gr\n",
+        "import os\n",
+        "import sys\n",
+        "import subprocess\n",
+        "import pysrt\n",
+        "import whisper\n",
+        "import tempfile\n",
+        "from transformers import pipeline\n",
+        "from peft import PeftModel, PeftConfig\n",
+        "from transformers import WhisperForConditionalGeneration, Seq2SeqTrainer, WhisperTokenizer, WhisperProcessor, pipeline\n",
+        "\n",
+        "\n",
+        "def vidrip(video_file, output_ext=\"mp3\"):\n",
+        "    filename, ext = os.path.splitext(video_file)\n",
+        "    subprocess.call([\"ffmpeg\", \"-y\", \"-i\", video_file, \"-ar\", \"16000\",  f\"{filename}.{output_ext}\"],\n",
+        "                    stdout=subprocess.DEVNULL,\n",
+        "                    stderr=subprocess.STDOUT)\n",
+        "\n",
+        "    return f\"{filename}.{output_ext}\"\n",
+        "\n",
+        "def float_to_subriptime(float_time):\n",
+        "  hours = int(float_time)\n",
+        "  minutes = int((float_time - hours) * 60)\n",
+        "  seconds = int(((float_time - hours) * 60 - minutes) * 60)\n",
+        "  return pysrt.SubRipTime(hours=hours, minutes=minutes, seconds=seconds)\n",
+        "\n",
+        "\n",
+        "\n",
+        "def MultiInference(video,tgt_lang):\n",
+        "  peft_model_id = \"laksf/whisper-large-v3-merge-LoRA\" if tgt_lang == \"ha\" else \"laksf/whisper-large-v3-yo-LORA-colab\"\n",
+        "  peft_config = PeftConfig.from_pretrained(\"laksf/whisper-large-v3-LORA\")\n",
+        "  model = WhisperForConditionalGeneration.from_pretrained(\n",
+        "    peft_model_id, load_in_8bit=True, device_map=\"auto\"\n",
+        "  )\n",
+        "\n",
+        "  task = \"transcribe\" if tgt_lang == \"en\" else \"translate\"\n",
+        "  tokenizer = WhisperTokenizer.from_pretrained(peft_config.base_model_name_or_path, task=task)\n",
+        "  processor = WhisperProcessor.from_pretrained(peft_config.base_model_name_or_path, task=task)\n",
+        "  feature_extractor = processor.feature_extractor\n",
+        "  pipe = pipeline(\"automatic-speech-recognition\", model=model, tokenizer=tokenizer, feature_extractor=feature_extractor)\n",
+        "  forced_decoder_ids = tokenizer.get_decoder_prompt_ids(language= tgt_lang, task=task)\n",
+        "  audio_file = vidrip(video)\n",
+        "  translations = pipe(audio_file, return_timestamps= True,generate_kwargs={\"forced_decoder_ids\": forced_decoder_ids})\n",
+        "  return translations['text']\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "CyEOLh3Na2St",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "d6266082-b2b4-4150-f5b5-c0b876dea072"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "100%|█████████████████████████████████████| 2.88G/2.88G [00:56<00:00, 54.4MiB/s]\n",
+            "/usr/local/lib/python3.10/dist-packages/whisper/__init__.py:150: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.\n",
+            "  checkpoint = torch.load(fp, map_location=device)\n"
+          ]
+        }
+      ],
+      "source": [
+        "#MultiInference(\"/content/drive/MyDrive/savedata/jide_yo.mp4\",\"en\")\n",
+        "import whisper\n",
+        "asr = whisper.load_model(\"large\")"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "9Rw31fVf-hSV"
+      },
+      "outputs": [],
+      "source": [
+        "\n",
+        "from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, BitsAndBytesConfig\n",
+        "import torch\n",
+        "import re\n",
+        "\n",
+        "\n",
+        "def NLLBInference(video, src_lang, tgt_lang):\n",
+        "  result = asr.transcribe(video)\n",
+        "  #src_lang = \"en_Latn\"\n",
+        "  tgt_lang = \"hau_Latn\" if tgt_lang == \"ha\" else \"yor_Latn\"\n",
+        "  model_name = \"facebook/nllb-200-distilled-600M\"\n",
+        "\n",
+        "  beam_size = 4\n",
+        "\n",
+        "  tokenizer = AutoTokenizer.from_pretrained(model_name, src_lang=src_lang)\n",
+        "  model = AutoModelForSeq2SeqLM.from_pretrained(model_name,\n",
+        "                                              device_map=\"auto\",\n",
+        "                                              quantization_config=BitsAndBytesConfig(load_in_8bit=True),\n",
+        "                                              )\n",
+        "  #text = result[\"text\"].split(\".\")\n",
+        "  source_sents = result[\"text\"].split(\".\")\n",
+        "\n",
+        "  inputs = tokenizer(source_sents, padding=True, return_tensors=\"pt\").to(\"cuda\")\n",
+        "\n",
+        "  translated_tokens = model.generate(\n",
+        "    **inputs, forced_bos_token_id=tokenizer.convert_tokens_to_ids(tgt_lang), max_length=30, num_beams=beam_size\n",
+        "  )\n",
+        "  translations = tokenizer.batch_decode(translated_tokens, skip_special_tokens=True)\n",
+        "  output = \",\".join(translations)\n",
+        "  return output"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 1000
+        },
+        "id": "FvXFYl0tdtV0",
+        "outputId": "798f1656-468f-4664-bfd8-e45d7e169412"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.10/dist-packages/gradio/utils.py:980: UserWarning: Expected 3 arguments for function <function srt_dl at 0x7af85eaf2830>, received 2.\n",
+            "  warnings.warn(\n",
+            "/usr/local/lib/python3.10/dist-packages/gradio/utils.py:984: UserWarning: Expected at least 3 arguments for function <function srt_dl at 0x7af85eaf2830>, received 2.\n",
+            "  warnings.warn(\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Running Gradio in a Colab notebook requires sharing enabled. Automatically setting `share=True` (you can turn this off by setting `share=False` in `launch()` explicitly).\n",
+            "\n",
+            "Colab notebook detected. This cell will run indefinitely so that you can see errors and logs. To turn off, set debug=False in launch().\n",
+            "* Running on public URL: https://e1a1d97a208f9064b6.gradio.live\n",
+            "\n",
+            "This share link expires in 72 hours. For free permanent hosting and GPU upgrades, run `gradio deploy` from the terminal in the working directory to deploy to Hugging Face Spaces (https://huggingface.co/spaces)\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "<div><iframe src=\"https://e1a1d97a208f9064b6.gradio.live\" width=\"100%\" height=\"500\" allow=\"autoplay; camera; microphone; clipboard-read; clipboard-write;\" frameborder=\"0\" allowfullscreen></iframe></div>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "Traceback (most recent call last):\n",
+            "  File \"/usr/local/lib/python3.10/dist-packages/gradio/queueing.py\", line 624, in process_events\n",
+            "    response = await route_utils.call_process_api(\n",
+            "  File \"/usr/local/lib/python3.10/dist-packages/gradio/route_utils.py\", line 323, in call_process_api\n",
+            "    output = await app.get_blocks().process_api(\n",
+            "  File \"/usr/local/lib/python3.10/dist-packages/gradio/blocks.py\", line 2018, in process_api\n",
+            "    result = await self.call_function(\n",
+            "  File \"/usr/local/lib/python3.10/dist-packages/gradio/blocks.py\", line 1567, in call_function\n",
+            "    prediction = await anyio.to_thread.run_sync(  # type: ignore\n",
+            "  File \"/usr/local/lib/python3.10/dist-packages/anyio/to_thread.py\", line 33, in run_sync\n",
+            "    return await get_asynclib().run_sync_in_worker_thread(\n",
+            "  File \"/usr/local/lib/python3.10/dist-packages/anyio/_backends/_asyncio.py\", line 877, in run_sync_in_worker_thread\n",
+            "    return await future\n",
+            "  File \"/usr/local/lib/python3.10/dist-packages/anyio/_backends/_asyncio.py\", line 807, in run\n",
+            "    result = context.run(func, *args)\n",
+            "  File \"/usr/local/lib/python3.10/dist-packages/gradio/utils.py\", line 846, in wrapper\n",
+            "    response = f(*args, **kwargs)\n",
+            "  File \"<ipython-input-8-ad18e4e765b2>\", line 11, in srt_gen\n",
+            "    translations = NLLBInference(video, src_lang, tgt_lang)\n",
+            "  File \"<ipython-input-7-5bb795cb3441>\", line 7, in NLLBInference\n",
+            "    result = model.transcribe(video)\n",
+            "UnboundLocalError: local variable 'model' referenced before assignment\n"
+          ]
+        }
+      ],
+      "source": [
+        "import gradio as gr\n",
+        "import whisper\n",
+        "import os\n",
+        "import pysrt\n",
+        "import shutil\n",
+        "import subprocess\n",
+        "\n",
+        "\n",
+        "def srt_gen(video, src_lang, tgt_lang=\"yor_Latn\"):\n",
+        "  if tgt_lang != \"en\":\n",
+        "    translations = NLLBInference(video, src_lang, tgt_lang)\n",
+        "    return translations\n",
+        "\n",
+        "  else:\n",
+        "    result = asr.transcribe(video, language=tgt_lang)\n",
+        "    return result[\"text\"]\n",
+        "\n",
+        "\n",
+        "def srt_dl(video, src_lang, tgt_lang):\n",
+        "  video_name = os.path.basename(video).split(\".\")[0]\n",
+        "  result = asr.transcribe(video)\n",
+        "  srt_file_path = str(\"/tmp/gradio/\")\n",
+        "  writer = whisper.utils.get_writer(\"srt\", srt_file_path)\n",
+        "  writer(result, video)\n",
+        "  srt_file = f\"{srt_file_path}/{video_name}.srt\"\n",
+        "  return srt_file\n",
+        "\n",
+        "with gr.Blocks() as demo:\n",
+        "    gr.Markdown(\"# Automated Captions Generation\")\n",
+        "    with gr.Row():\n",
+        "        with gr.Column():\n",
+        "            video = gr.Video(label=\"Upload Video\")\n",
+        "            src_lang = gr.Dropdown([(\"English\", \"en\") , (\"Hausa\", \"ha\") , (\"Yoruba\", \"yo\")], label=\"Source Language\")\n",
+        "            tgt_lang = gr.Dropdown([(\"English\", \"en\") , (\"Hausa\", \"ha\") , (\"Yoruba\", \"yo\")], label=\"Target Language\")\n",
+        "            text_submit = gr.Button(\"Generate Text\", variant=\"primary\")\n",
+        "        with gr.Column():\n",
+        "            text_output = gr.Text(label=\"Transcription\", placeholder=\"Text output here.....\")\n",
+        "            srt_submit = gr.Button(\"Generate Subtitles\", variant=\"primary\")\n",
+        "            with gr.Column():\n",
+        "                srt_output = gr.File(label=\"Subtitles\")\n",
+        "\n",
+        "    text_submit.click(fn=srt_gen, inputs=[video, src_lang, tgt_lang], outputs=[text_output])\n",
+        "    srt_submit.click(fn=srt_dl, inputs=[video, tgt_lang], outputs=[srt_output])\n",
+        "\n",
+        "demo.launch(debug=True)\n"
+      ]
+    }
+  ],
+  "metadata": {
+    "accelerator": "GPU",
+    "colab": {
+      "gpuType": "T4",
+      "provenance": [],
+      "mount_file_id": "1brmBSueOoKhWnnzloxvcgpgwkVgV1WvH",
+      "authorship_tag": "ABX9TyNddB/51e2vcbCCFn78+Nrm"
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
