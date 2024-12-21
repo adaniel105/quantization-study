@@ -8,8 +8,7 @@ Quantization techniques:
 ## Paper Backlog
 
 - QLoRA: Efficient Finetuning of quantized LLMs - https://arxiv.org/abs/2305.14314
-
 - GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection - https://arxiv.org/abs/2403.03507
-
-- LISA: Layerwise Importance Sampling for Memory Efficient Large Language Model Fine-Tuning - https://www.alphaxiv.org/abs/2403.17919
+- The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits: https://arxiv.org/abs/2402.17764
+- LISA: Layerwise Importance Sampling for Memory Efficient Large Language Model Fine-Tuning - https://arxiv.org/abs/2403.17919
 
